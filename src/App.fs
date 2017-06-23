@@ -144,7 +144,7 @@ let root model dispatch =
         [ h2 [] [ unbox "Future Meetups" ]
         ; div [ ClassName "container" ] [ futureMeetupsView model.future ]
         ]
-      div [ ClassName "footer" ] [ footerView ]
+      footerView
     ]
 
 let fetchUrl url = promise {
