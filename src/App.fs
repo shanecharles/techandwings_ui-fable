@@ -81,8 +81,18 @@ let dayOfWeekToString (d : DateTime) =
   | DayOfWeek.Friday -> "Friday"
   | DayOfWeek.Saturday -> "Saturday"
 
-let formatDateString (d : DateTime) = 
-  d.ToString("D")
+let formatDateString (date : DateTime) = 
+  let dateString = date.ToString("d")
+  let mdy = dateString.Split([|'/'|]) |> Array.map (Int32.TryParse)
+              |> Array.filter fst
+              |> Array.map snd
+  if mdy.Length = 3 then
+    let (m, d, y) = (mdy.[0], mdy.[1], mdy.[2])
+    let localDate = System.DateTime(y, m, d)
+    sprintf "%s, %s %d, %d" (dayOfWeekToString localDate) (monthToString m) d y
+  else
+    dateString
+
   //sprintf "%s, %s %d, %d" (dayOfWeekToString d) (monthToString d.Month) d.Day d.Year
 
 let formatPeople = function
@@ -158,7 +168,6 @@ let fetchMeetups () =
   |> Promise.map (List.ofSeq >> FetchResult) 
   |> Promise.catch FetchFail
   
-
 let updateModel meetups = 
   let cutoff = DateTime.Now.AddMinutes(-30.)
   let prev, active = meetups |> List.partition (fun m -> m.date < cutoff)
