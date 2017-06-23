@@ -94,7 +94,7 @@ let footerView =
        [ p [] [ unbox "Created with "
                 a [ Href "http://fable.io" ] [ unbox "Fable" ]]
          p [] [ unbox "Source code found on "
-                a [ Href "https://github.com/shanecharles/techandwings_ui.git" ] [ unbox "GitHub" ]]
+                a [ Href "https://github.com/shanecharles/techandwings_ui-fable.git" ] [ unbox "GitHub" ]]
        ]
 
 let nextMeetupView = function
