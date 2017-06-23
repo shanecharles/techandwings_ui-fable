@@ -1,0 +1,164 @@
+$header-bg-color: #0d4d4d;
+$header-color: #ffffff;
+$secondary-header-bg-color: #407f7f;
+$highlight-bg-color: #669999; 
+$primary-bg-color: #226666;
+$h1-font-size: 140%;
+$h2-font-size: 115%;
+
+$pad-lg: 20px;
+$pad-md: 10px;
+$pad-sm: 5px;
+
+$html-background-color: #ddd;
+
+$screen-sm: 648px;
+$screen-md: 800px;
+
+@import "reset";
+
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+  background-color: $html-background-color;
+}
+
+body {
+  width: 100%;
+  background-color: white;
+}
+
+h2 {
+  text-align: center;
+  background-color: $secondary-header-bg-color;
+  color: $header-color;
+  font-size: $h2-font-size;
+  padding: 10px 5px;
+}
+
+.header {
+  padding: 0 10px;
+  h1 {
+    color: $header-bg-color;
+    font-size: $h1-font-size;
+    padding: 20px 10px;
+    display: inline-block;
+  }
+  h2 {
+    font-size: $h2-font-size;
+    font-style: italic;
+    display: inline-block;
+    background-color: $header-color;
+    color: $header-bg-color;
+  }
+}
+
+.footer {
+  background-color: $html-background-color;
+  padding: $pad-md $pad-sm;
+  p {
+    display: block;
+    background-color: inherit;
+    text-align: center;
+    a {
+      text-decoration: none;
+    }
+  }
+}
+
+.container {
+  padding: 10px 5px;
+}
+
+.data {
+  display: inline-block;
+  width: 80%;
+}
+div.line {
+    margin: 5px 0;
+  }
+
+div.label {
+    display: inline-block;
+    font-weight: bold;
+    margin-right: 6px;
+    width: 60px;
+    text-align: right;
+    vertical-align: top;
+  }
+  div.label::after {
+    content: ":";
+  }
+
+.next-meetup {
+  h1 {
+    background-color: $header-bg-color;
+    color: $header-color;
+    font-size: $h1-font-size;
+    text-align: center;
+    padding: 20px 10px;
+  }
+  div.line {
+    background-color: white;
+    color: black;
+    text-align: left;
+    font-size: $h2-font-size;
+  }
+}
+
+.previous-meetup {
+  }
+
+.future-meetups {
+}
+
+@media only screen and (min-width: $screen-sm) {
+ .footer {
+   p {
+      display: inline-block;
+      width: 50%;
+      text-align: left;
+    }
+    p:nth-child(even) {
+      text-align: right;
+    } 
+  }
+
+  .next-meetup {
+    div.logo {
+      background-image: url('/images/logo.png');
+      width: 150px;
+      height: 150px;
+      display: inline-block;
+    }
+    div.next-details {
+      display: inline-block;
+      vertical-align: middle;
+      margin: 20px;
+      width: 60%;
+    }
+  }
+
+  .previous-meetup {
+    width: 48%;
+    margin: 1%;
+    display: inline-block;
+    div .content {
+      padding: 5px;
+    }
+  }
+
+  .future-meetups {
+    width: 48%;
+    margin: 1%;
+    display: inline-block;
+    div .content {
+      padding: 5px;
+    }
+  }
+}
