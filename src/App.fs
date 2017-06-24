@@ -47,14 +47,12 @@ let init result =
      meetups  = None
      }, Cmd.ofMsg Fetch)
 
-// add aria-hidden "true"
 let loadingSpinner = i [ ClassName "fa fa-cog fa-3x fa-spin center" ] []
 
 let dataLine label data =
   div [ ClassName "line" ] 
       [ div [ ClassName "label" ] [ unbox label ]
         div [ ClassName "data" ]  [ unbox data ]]
-
 
 let monthToString = function
   | 1  -> "January"
@@ -91,8 +89,6 @@ let formatDateString (date : DateTime) =
         let localDate = System.DateTime(y, m, d)
         sprintf "%s, %s %d, %d" (dayOfWeekToString localDate) (monthToString m) d y
     | _ -> dateString
-
-  //sprintf "%s, %s %d, %d" (dayOfWeekToString d) (monthToString d.Month) d.Day d.Year
 
 let formatPeople = function
   | Some p -> p |> string
@@ -170,16 +166,15 @@ let fetchMeetups () =
 let updateModel meetups = 
   let cutoff = DateTime.Now.AddMinutes(-30.)
   let prev, active = meetups |> List.partition (fun m -> m.date < cutoff)
-  
   let next, future =
     match active with
     | h :: t  -> (Some h), t
     | _       -> None, [] 
 
-  { next = Loaded next
+  { next     = Loaded next
     previous = Loaded (prev |> List.rev |> List.tryHead)
-    future = Loaded future
-    meetups = Some meetups }
+    future   = Loaded future
+    meetups  = Some meetups }
   
 let fetchFail ex = {
   next = Error (ex.ToString())
