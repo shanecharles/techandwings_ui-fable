@@ -49,12 +49,12 @@ let init result =
 
 let loadingSpinner = i [ ClassName "fa fa-cog fa-3x fa-spin center" ] []
 
-let dataLine label data =
+let dataLine (label : string) (data : string) =
   div [ ClassName "line" ] 
       [ div [ ClassName "label" ] [ unbox label ]
         div [ ClassName "data" ]  [ unbox data ]]
 
-let monthToString = function
+let monthToString : int -> string = function
   | 1  -> "January"
   | 2  -> "February"
   | 3  -> "March"
@@ -90,7 +90,7 @@ let formatDateString (date : DateTime) =
         sprintf "%s, %s %d, %d" (dayOfWeekToString localDate) (monthToString m) d y
     | _ -> dateString
 
-let formatPeople = function
+let formatPeople : int option -> string = function
   | Some p -> p |> string
   | None   -> "¯\\_(ツ)_/¯"
 
@@ -102,19 +102,18 @@ let footerView =
                 a [ Href "https://github.com/shanecharles/techandwings_ui-fable.git" ] [ unbox "GitHub" ]]
        ]
 
-let nextMeetupView = function
+let nextMeetupView : Resource<Meetup option> -> React.ReactElement = function
   | Loading         -> div [] [ loadingSpinner ]
   | Loaded None     -> div [] [ unbox "There is no meetup scheduled yet. Check again later." ]
-  | Loaded (Some m) -> div [] 
-                        [ div [ ClassName "logo" ] []
-                          div [ ClassName "next-details" ] 
-                            [ dataLine "When"  (formatDateString m.date)
-                              dataLine "Time" (m.date.ToString("t"))
-                              dataLine "Where" m.location
-                          ]]
+  | Loaded (Some m) -> div [] [ div [ ClassName "logo" ] []
+                                div [ ClassName "next-details" ] 
+                                    [ dataLine "When"  (formatDateString m.date)
+                                      dataLine "Time" (m.date.ToString("t"))
+                                      dataLine "Where" m.location ]
+                              ]
   | Error err -> div [] [ unbox err ]
 
-let previousMeetupView = function
+let previousMeetupView : Resource<Meetup option> -> React.ReactElement = function
   | Loading           -> div [] [ loadingSpinner ]
   | Loaded (None)     -> div [] [ unbox "Was there really a previous meeting?"]
   | Loaded (Some m)   -> div [] [ dataLine "When" (m.date |> formatDateString) 
@@ -122,32 +121,32 @@ let previousMeetupView = function
                                   dataLine "People" (m.people |> formatPeople)
                                   dataLine "Topics" m.topics
                                 ]    
-  | Error msg         -> div [] [ unbox "uh oh... someone talk with the dev!" ]
+  | Error msg         -> div [] [ unbox msg ]
 
-let futureMeetupsView = function
+let futureMeetupsView : Resource<Meetup list> -> React.ReactElement = function
   | Loading    -> div [] [ loadingSpinner ]
   | Loaded []  -> div [] [ unbox "No meetups planned at the moment... check back later." ]
   | Loaded mts -> div [] (mts |> List.map (fun m -> dataLine "When" (m.date |> formatDateString)))
-  | Error msg  -> div [] [ unbox "uh oh... someone talk with the dev!" ]
+  | Error msg  -> div [] [ unbox msg ]
 
 let root model dispatch =
   div
     [ ClassName "main" ]
     [ div [ ClassName "header" ]
         [ h1 [] [ unbox "Tech & Wings" ]
-        ; h2 [] [ unbox "A group of developers, IT specialiasts, and enthusiasts gathering together to talk all kinds of tech related topics." ] 
+          h2 [] [ unbox "A group of developers, IT specialiasts, and enthusiasts gathering together to talk all kinds of tech related topics." ] 
         ]
       div [ ClassName "next-meetup" ]
         [ h1 [] [ unbox "Next Meetup" ]
-        ; div [ ClassName "container" ] [ nextMeetupView model.next ] 
+          div [ ClassName "container" ] [ nextMeetupView model.next ] 
         ]
       div [ ClassName "previous-meetup" ]
         [ h2 [] [ unbox "Previous Meetup" ]
-        ; div [ ClassName "container" ] [ previousMeetupView model.previous ]
+          div [ ClassName "container" ] [ previousMeetupView model.previous ]
         ]  
       div [ ClassName "future-meetups" ]
         [ h2 [] [ unbox "Future Meetups" ]
-        ; div [ ClassName "container" ] [ futureMeetupsView model.future ]
+          div [ ClassName "container" ] [ futureMeetupsView model.future ]
         ]
       footerView
     ]
@@ -178,8 +177,8 @@ let updateModel meetups =
   
 let fetchFail ex = {
   next = Error (ex.ToString())
-  previous = Error "nope"
-  future = Error "error"
+  previous = Error "uh oh... someone talk with the dev!"
+  future = Error "Having troubles peering into the void at this time."
   meetups = None
   }
 
