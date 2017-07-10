@@ -157,7 +157,7 @@ let fetchUrl url = promise {
   }
 
 let fetchMeetups () =
-  let dataUrl = "https://techandwingsapi.azurewebsites.net/api/meetups"
+  let dataUrl = "https://techandwingsfunctions.azurewebsites.net/api/meetups"
   fetchUrl dataUrl
   |> Promise.map (List.ofSeq >> FetchResult) 
   |> Promise.catch FetchFail
