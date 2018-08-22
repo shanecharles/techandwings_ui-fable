@@ -1,3 +1,52 @@
+### 0.3.5
+
+* Update paket.exe
+
+### 0.3.4
+
+* Fix mistakes in the README
+* Add VSCode tasks
+* Fix IE11 support
+* Use source-map only during development
+* Update dependencies
+
+### 0.3.3
+
+* Add Fable.Elmish.HMR
+
+### 0.3.2
+
+* Fix #30: Upgrade dependencies, use Fable.React 1.2.0
+
+### 0.3.1
+
+* Fix dotnet version in README
+
+### 0.3.0
+
+* Go to netstandard2.0
+* Updates all deps (.Net & JS)
+
+### 0.2.6
+
+* Include user choice between npm5 and yarn
+* Fix viewport (eg: for mobile)
+* Update dependencies to latest version
+* Better documention in the README.md
+* Webpack 3
+* Move project file into src
+
+### 0.2.5
+
+* Use dotnet-fable as clitool
+* Fix Navbar display
+* Fix #15: Prevent template engine to process paket files
+* Do not emit: //+:cnd in App.fs
+
+### 0.2.4
+
+* Update paket to latest version
+
 ### 0.2.3
 
 * Move RELEASE_NOTES into template directory

@@ -7,45 +7,15 @@ open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
 open Fable.Import.Browser
-open Fable.PowerPack
-open Fable.PowerPack.Fetch
+open Types
+open App.State
+open Global
 open System
 
 importAll "../sass/main.scss"
 
 open Fable.Helpers.React
 open Fable.Helpers.React.Props
-
-type Meetup = { 
-  date     : DateTime
-  location : string
-  people   : int option
-  topics   : string
-}
-
-type Resource<'a> =
-  | Loading
-  | Loaded of 'a
-  | Error of string
-
-type Model = {
-  next     : (Meetup option) Resource
-  previous : (Meetup option) Resource
-  future   : (Meetup list) Resource
-  meetups  : (Meetup list) option
-}
-
-type Msg =
-  | Fetch
-  | FetchResult of Meetup list
-  | FetchFail of Exception
-
-let init result = 
-  ({ next     = Loading
-     previous = Loading
-     future   = Loading
-     meetups  = None
-     }, Cmd.ofMsg Fetch)
 
 let loadingSpinner = i [ ClassName "fa fa-cog fa-3x fa-spin center" ] []
 
@@ -69,26 +39,21 @@ let monthToString : int -> string = function
   | 12 -> "December"
   | _  -> "No Month" 
 
-let dayOfWeekToString (d : DateTime) =
-  match d.DayOfWeek with 
-  | DayOfWeek.Sunday -> "Sunday"
-  | DayOfWeek.Monday -> "Monday"
-  | DayOfWeek.Tuesday -> "Tuesday"
+let dayOfWeekToString = function
+  | DayOfWeek.Sunday    -> "Sunday"
+  | DayOfWeek.Monday    -> "Monday"
+  | DayOfWeek.Tuesday   -> "Tuesday"
   | DayOfWeek.Wednesday -> "Wednesday"
-  | DayOfWeek.Thursday -> "Thursday"
-  | DayOfWeek.Friday -> "Friday"
-  | DayOfWeek.Saturday -> "Saturday"
+  | DayOfWeek.Thursday  -> "Thursday"
+  | DayOfWeek.Friday    -> "Friday"
+  | DayOfWeek.Saturday  -> "Saturday"
 
-let formatDateString (date : DateTime) = 
-  let dateString = date.ToString("d")
-  dateString.Split([|'/'|]) |> Array.map (Int32.TryParse)
-    |> Array.filter fst
-    |> Array.map snd
-    |> function 
-    | [|m; d; y|] -> 
-        let localDate = System.DateTime(y, m, d)
-        sprintf "%s, %s %d, %d" (dayOfWeekToString localDate) (monthToString m) d y
-    | _ -> dateString
+let formatDateString (d : DateTime) = 
+  sprintf "%s, %s %d, %d" 
+    (d.DayOfWeek |> dayOfWeekToString)
+    (d.Month |> monthToString)
+    d.Day
+    d.Year
 
 let formatPeople : int option -> string = function
   | Some p -> p |> string
@@ -129,6 +94,7 @@ let futureMeetupsView : Resource<Meetup list> -> React.ReactElement = function
   | Loaded mts -> div [] (mts |> List.map (fun m -> dataLine "When" (m.date |> formatDateString)))
   | Error msg  -> div [] [ unbox msg ]
 
+
 let root model dispatch =
   div
     [ ClassName "main" ]
@@ -150,53 +116,16 @@ let root model dispatch =
         ]
       footerView
     ]
-
-let fetchUrl url = promise {
-  let! meetups = fetchAs<Meetup[]> url []
-  return meetups
-  }
-
-let fetchMeetups () =
-  let dataUrl = "https://techandwingsfunctions.azurewebsites.net/api/meetups"
-  fetchUrl dataUrl
-  |> Promise.map (List.ofSeq >> FetchResult) 
-  |> Promise.catch FetchFail
   
-let updateModel meetups = 
-  let cutoff = DateTime.Now.AddMinutes(-30.)
-  let prev, active = meetups |> List.partition (fun m -> m.date < cutoff)
-  let next, future =
-    match active with
-    | h :: t  -> (Some h), t
-    | _       -> None, [] 
-
-  { next     = Loaded next
-    previous = Loaded (prev |> List.rev |> List.tryHead)
-    future   = Loaded future
-    meetups  = Some meetups }
-  
-let fetchFail ex = {
-  next = Error (ex.ToString())
-  previous = Error "uh oh... someone talk with the dev!"
-  future = Error "Having troubles peering into the void at this time."
-  meetups = None
-  }
-
-let update msg model =
-  match msg with
-  | Fetch          -> (model, Cmd.ofPromise fetchMeetups () id FetchFail)
-  | FetchResult ms -> (updateModel ms, Cmd.none)
-  | FetchFail ex   -> (fetchFail ex, Cmd.none)
-
 open Elmish.React
 open Elmish.Debug
+open Elmish.HMR
 
 // App
 Program.mkProgram init update root
-|> Program.withReact "elmish-app"
-//-:cnd
 #if DEBUG
 |> Program.withDebugger
+|> Program.withHMR
 #endif
-//+:cnd
+|> Program.withReact "elmish-app"
 |> Program.run
